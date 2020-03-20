@@ -2,8 +2,9 @@
   "name": "mern-library",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "server": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/locnt19/mern-library/issues"
   },
-  "homepage": "https://github.com/locnt19/mern-library#readme"
+  "homepage": "https://github.com/locnt19/mern-library#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
 }

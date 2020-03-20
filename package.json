@@ -1,0 +1,19 @@
+{
+  "name": "mern-library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/locnt19/mern-library.git"
+  },
+  "keywords": [],
+  "author": "Loc Thanh | locnt19@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/locnt19/mern-library/issues"
+  },
+  "homepage": "https://github.com/locnt19/mern-library#readme"
+}

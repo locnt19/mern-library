@@ -3,6 +3,8 @@ const URI = require('../configs/index');
 
 mongoose.connect(process.env.MONGODB_URI || URI, {
   useNewUrlParser: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
   useUnifiedTopology: true
 });
 

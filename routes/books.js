@@ -3,10 +3,7 @@ const booksController = require('../controllers/bookController');
 
 router
   .route('/')
-  // .get(booksController.findAll)
-  .get((req, res) => {
-    res.send('Hello from routes/books.js');
-  })
+  .get(booksController.findAll)
   .post(booksController.create);
 
 router

@@ -3,7 +3,7 @@ const LoaiSachController = require('../controllers/LoaiSachController');
 
 router
   .route('/')
-  .get(LoaiSachController.findAll)
+  .get(LoaiSachController.loadList)
   .post(LoaiSachController.create);
 
 router

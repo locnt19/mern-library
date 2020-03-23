@@ -3,8 +3,11 @@ const LoaiSach = require('../models/LoaiSach');
 // Defining all methods and business logic for routes
 module.exports = {
   // GET
-  findAll: function (req, res) {
-    LoaiSach.find(req.query)
+  loadList: function (req, res) {
+    LoaiSach.find({
+        ...req.query,
+        trang_thai: 'true'
+      })
       .then(item => res.json(item))
       .catch(err => res.status(422).json(err));
   },
@@ -32,10 +35,11 @@ module.exports = {
 
   // DELETE
   remove: function (req, res) {
-    LoaiSach.findById({
+    LoaiSach.findOneAndUpdate({
         _id: req.params.id
+      }, {
+        trang_thai: false
       })
-      .then(item => item.remove())
       .then(itemList => res.json(itemList))
       .catch(err => res.status(422).json(err));
   }

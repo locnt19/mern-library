@@ -10,8 +10,6 @@ const TacGiaSchema = new Schema({
     type: Boolean,
     default: true
   }
-}, {
-  timestamps: true
 });
 
 const TacGia = mongoose.model('TacGia', TacGiaSchema, 'Tac_Gia');

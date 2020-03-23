@@ -10,8 +10,6 @@ const loaiSachSchema = new Schema({
     type: Boolean,
     default: true
   }
-}, {
-  timestamps: true
 });
 
 const LoaiSach = mongoose.model('LoaiSach', loaiSachSchema, 'Loai_Sach');

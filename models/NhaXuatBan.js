@@ -10,8 +10,6 @@ const NhaXuatBanSchema = new Schema({
     type: Boolean,
     default: true
   }
-}, {
-  timestamps: true
 });
 
 const NhaXuatBan = mongoose.model('NhaXuatBan', NhaXuatBanSchema, 'Nha_Xuat_Ban');

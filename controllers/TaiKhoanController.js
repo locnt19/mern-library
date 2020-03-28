@@ -1,42 +1,46 @@
-const Book = require('../models/Book');
+const TaiKhoan = require('../models/TaiKhoan');
 
 // Defining all methods and business logic for routes
 module.exports = {
   // GET
-  findAll: function (req, res) {
-    Book.find(req.query)
-      .then(books => res.json(books))
+  loadList: function (req, res) {
+    TaiKhoan.find({
+        ...req.query,
+        trang_thai: 'true'
+      })
+      .then(item => res.json(item))
       .catch(err => res.status(422).json(err));
   },
   findById: function (req, res) {
-    Book.findById(req.params.id)
-      .then(book => res.json(book))
+    TaiKhoan.findById(req.params.id)
+      .then(item => res.json(item))
       .catch(err => res.status(422).json(err));
   },
 
   // POST
   create: function (req, res) {
-    Book.create(req.body)
-      .then(newBook => res.json(newBook))
+    TaiKhoan.create(req.body)
+      .then(item => res.json(item))
       .catch(err => res.status(422).json(err));
   },
 
   // PUT
   update: function (req, res) {
-    Book.findOneAndUpdate({
+    TaiKhoan.findOneAndUpdate({
         _id: req.params.id
       }, req.body)
-      .then(book => res.json(book))
+      .then(item => res.json(item))
       .catch(err => res.status(422).json(err));
   },
-  
-// DELETE
+
+  // DELETE
   remove: function (req, res) {
-    Book.findById({
+    TaiKhoan.findOneAndUpdate({
         _id: req.params.id
+      }, {
+        trang_thai: false
       })
-      .then(book => book.remove())
-      .then(allbooks => res.json(allbooks))
+      .then(itemList => res.json(itemList))
       .catch(err => res.status(422).json(err));
   }
 };

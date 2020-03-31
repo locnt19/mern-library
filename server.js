@@ -14,6 +14,13 @@ require('./models');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Turn on CORS
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "localhost:3000/tai-khoan");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// })
+
 // routes
 app.use(routes);
 

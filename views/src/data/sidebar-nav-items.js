@@ -1,9 +1,15 @@
 export default function() {
   return [
     {
+      title: "Vai trò",
+      to: "/vai-tro",
+      htmlBefore: '<i class="material-icons">assignment_ind</i>',
+      htmlAfter: ""
+    },
+    {
       title: "Blog Dashboard",
       to: "/blog-overview",
-      htmlBefore: '<i class="material-icons">edit</i>',
+      htmlBefore: '<i class="material-icons">dashboard</i>',
       htmlAfter: ""
     },
     {

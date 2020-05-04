@@ -12,6 +12,7 @@ import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
+import VaiTro from './views/VaiTro';
 
 export default [
   {
@@ -19,6 +20,11 @@ export default [
     exact: true,
     layout: DefaultLayout,
     component: () => <Redirect to="/blog-overview" />
+  },
+  {
+    path: "/vai-tro",
+    layout: DefaultLayout,
+    component: VaiTro
   },
   {
     path: "/blog-overview",

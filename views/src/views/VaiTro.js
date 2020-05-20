@@ -1,214 +1,279 @@
-import React from "react";
+import React from 'react';
 import {
   Container, Row, Col,
   Card, CardHeader, CardBody,
   Button,
-  Modal, ModalBody, ModalHeader,
-  Form, FormInput, FormGroup
-} from "shards-react";
-import classnames from 'classnames';
+  Alert
+} from 'shards-react';
 import axios from 'axios';
-import PageTitle from "../components/common/PageTitle";
-// import TaoChucVu from '../components/chuc-vu/TaoChucVu';
+import PageTitle from '../components/common/PageTitle';
+import DanhSachVaiTro from '../components/vai-tro/DanhSachVaiTro';
+import ModalThemVaiTro from '../components/vai-tro/ModalThemVaiTro';
+import ModalSuaVaiTro from '../components/vai-tro/ModalSuaVaiTro';
+import ModalXoaVaiTro from '../components/vai-tro/ModalXoaVaiTro';
+const initialVaiTro = {
+  id_vaitro: "",
+  ma_vaitro: "",
+  ten_vaitro: "",
+  ma_vaitro_error: "",
+  ten_vaitro_error: "",
+}
+const initialAlert = {
+  alert_coundown: 0,
+  alert_timeDismiss: 3,
+}
 
-const defaultStateForm = {
-  ma_chucvu: '',
-  ten_chucvu: '',
-  ma_chucvu_valid: null,
-  ma_chucvu_error: '',
-  ten_chucvu_valid: null,
-  ten_chucvu_error: ''
-};
 
 class VaiTro extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      danhsach_chucvu: [],
-      open_modal: false,
-      ...defaultStateForm
-    }
-  }
+      danhsach_vaitro: [],
+      modal_new: false,
+      modal_edit: false,
+      modal_delete: false,
+      alert_visible: false,
+      alert_theme: 'success',
+      alert_notify: '',
+      ...initialVaiTro,
+      ...initialAlert,
+    };
 
-  loadDanhSachChucVu = () => {
-    axios.get("http://localhost:5000/api/vai-tro").then(res => {
-      this.setState({
-        danhsach_chucvu: res.data
-      })
-    }).catch(error => console.log(error));
-  }
+    this.intervalAlert = null;
+  };
+
+  // ALERT FUNCTION
+  showAlert = () => {
+    this.clearIntervalAlert();
+    this.setState({ alert_visible: true, ...initialAlert });
+    this.intervalAlert = setInterval(this.handleTimeChange, 1000);
+  };
+
+  handleTimeChange = () => {
+    if (this.state.alert_coundown < this.state.alert_timeDismiss - 1) {
+      this.setState({ alert_coundown: this.state.alert_coundown + 1 });
+      return;
+    };
+    this.setState({ alert_visible: false });
+    this.clearIntervalAlert();
+  };
+
+  clearIntervalAlert = () => {
+    clearInterval(this.intervalAlert);
+    this.intervalAlert = null;
+  };
+  // END ALERT FUNCTION
 
 
-  handleModal = () => {
-    // console.log('handleModal run');
+  handleChange = event => {
+    const isCheckbox = event.target.type === "checkbox";
     this.setState({
-      open_modal: !this.state.open_modal
+      [event.target.name]: isCheckbox
+        ? event.target.checked
+        : event.target.value
     })
-  }
+  };
 
-  handleChangeInput = e => {
-    // console.log('handleChangeInput run');
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleValidation = e => {
-    // console.log('handleValidation run');
-    const state = this.state;
-    // console.log(e.target.name);
-    switch (e.target.name) {
-      case 'ma_chucvu':
-        if (state.ma_chucvu.length === 0 || state.ma_chucvu.includes(' ')) {
-          this.setState({
-            ma_chucvu_error: 'Vui lòng nhập ít nhất 1 chữ cái và không có khoảng trắng',
-            ma_chucvu_valid: false
-          })
-        } else {
-          this.setState({
-            ma_chucvu_valid: true
-          })
-        };
-        break;
-      case 'ten_chucvu':
-        if (state.ten_chucvu.trim().length === 0) {
-          this.setState({
-            ten_chucvu_error: 'Vui lòng nhập tên chức vụ',
-            ten_chucvu_valid: false
-          })
-        } else {
-          this.setState({
-            ten_chucvu_valid: true
-          })
-        };
-        break;
-      default: break;
-    }
-  }
-
-  clearForm = () => {
-    this.setState(defaultStateForm);
-  }
-
-  handleSubmit = e => {
-    e.preventDefault();
-    const state = this.state;
-    if (state.ma_chucvu_valid === true && state.ten_chucvu_valid === true) {
-      const data = {
-        'ma_vaitro': state.ma_chucvu,
-        'ten_vaitro': state.ten_chucvu
+  handleModal = name => {
+    if (name === 'modal_new') {
+      this.setState({
+        modal_new: !this.state.modal_new
+      });
+      if (this.state.modal_new === false) {
+        this.setState({ ...initialVaiTro });
       };
-      axios.post('http://localhost:5000/api/vai-tro', data).then(res => {
-        alert('Tạo thành công !');
-        this.clearForm();
-        this.loadDanhSachChucVu();
+    }
+    if (name === 'modal_edit') {
+      this.setState({
+        modal_edit: !this.state.modal_edit
+      });
+    }
+    if (name === 'modal_delete') {
+      this.setState({
+        modal_delete: !this.state.modal_delete
+      });
+    }
+  };
+
+  validate = () => {
+    const state = this.state;
+    let ma_vaitro_error = "";
+    let ten_vaitro_error = "";
+
+    if (state.ma_vaitro.length === 0 || state.ma_vaitro.includes(' ')) {
+      ma_vaitro_error = "Mã vai trò không được có ký tự trắng và để trống";
+    }
+
+    if (state.ten_vaitro.trim().length === 0) {
+      ten_vaitro_error = "Tên vai trò không được để trống";
+    }
+
+    // ?????????????????????
+    if (ma_vaitro_error || ten_vaitro_error) {
+      this.setState({ ma_vaitro_error, ten_vaitro_error });
+      return false;
+    }
+
+    return true;
+  };
+
+  getVaiTro = (vaitro, modalName) => {
+    this.handleModal(modalName);
+    this.setState({
+      id_vaitro: vaitro._id,
+      ma_vaitro: vaitro.ma_vaitro,
+      ten_vaitro: vaitro.ten_vaitro
+    })
+  };
+
+
+  submitVaiTroMoi = event => {
+    event.preventDefault();
+    const isValid = this.validate();
+    if (isValid) {
+      axios.post('http://localhost:5000/api/vai-tro/', {
+        ma_vaitro: this.state.ma_vaitro,
+        ten_vaitro: this.state.ten_vaitro
       })
-        .catch(err => {
-          alert('Thêm thất bại !');
-          console.log(err);
+        .then(() => {
+          this.loadDanhSachVaiTro();
+          this.setState({
+            modal_new: false,
+            alert_notify: "Thêm mới thành công",
+          });
+          this.showAlert();
+        })
+        .catch(error => {
+          this.setState({
+            alert_notify: "Thêm mới thất bại, xin vui lòng thử lại",
+            alert_theme: "danger"
+          })
+          this.showAlert();
+          console.log(error);
         });
     }
+  };
+
+  submitChinhSuaVaiTro = event => {
+    event.preventDefault();
+    axios.put('http://localhost:5000/api/vai-tro/' + this.state.id_vaitro, {
+      ma_vaitro: this.state.ma_vaitro,
+      ten_vaitro: this.state.ten_vaitro
+    })
+      .then(() => {
+        this.loadDanhSachVaiTro();
+        this.setState({
+          modal_edit: false,
+          alert_notify: "Cập nhật thành công"
+        });
+        this.showAlert();
+      })
+      .catch(error => {
+        this.setState({
+          alert_notify: "Cập nhật thất bại, xin vui lòng thử lại",
+          alert_theme: "danger"
+        });
+        this.showAlert();
+        console.log(error);
+      })
   }
 
+  submitXoaVaiTro = event => {
+    axios.delete('http://localhost:5000/api/vai-tro/' + this.state.id_vaitro)
+      .then(() => {
+        this.loadDanhSachVaiTro();
+        this.setState({
+          modal_delete: false,
+          alert_notify: "Xoá thành công",
+        });
+        this.showAlert();
+      })
+      .catch(error => {
+        this.setState({
+          alert_notify: "Xoá thất bại, xin vui lòng thử lại",
+          alert_theme: "danger"
+        })
+        this.showAlert();
+        console.log(error);
+      })
+  }
+
+  loadDanhSachVaiTro = () => {
+    axios.get('http://localhost:5000/api/vai-tro').then(res => {
+      this.setState({
+        danhsach_vaitro: res.data
+      })
+    }).catch(error => console.log(error));
+  };
 
   componentDidMount() {
-    this.loadDanhSachChucVu();
+    this.loadDanhSachVaiTro();
   }
 
-
   render() {
-    const { danhsach_chucvu } = this.state;
     const state = this.state;
     return (
-      <Container className="main-content-container px-4">
-        {/* Page Header */}
-        <Row noGutters className="page-header py-4">
-          <PageTitle sm="4" title="Danh sách chức vụ" subtitle="Chức vụ" className="text-sm-left" />
-        </Row>
-        <Row>
-          <Col>
-            <Card small className="mb-4">
-              <CardHeader className="border-bottom d-flex justify-content-between">
-                <h6 className="m-0">Danh sách chức vụ</h6>
-                {/* <TaoChucVu /> */}
-                <div>
-                  <Button theme='primary' onClick={this.handleModal}>Tạo chức vụ mới</Button>
-                  <Modal open={state.open_modal} toggle={this.handleModal} centered>
-                    <ModalHeader>Tạo chức vụ mới</ModalHeader>
-                    <ModalBody>
-                      <Form onSubmit={this.handleSubmit}>
-                        <FormGroup>
-                          <label htmlFor='#ma_chucvu'>Mã chức vụ</label>
-                          <FormInput
-                            id='#ma_chucvu'
-                            name='ma_chucvu'
-                            value={state.ma_chucvu}
-                            onChange={this.handleChangeInput}
-                            onBlur={this.handleValidation}
-                            placeholder='Viết liền không dấu'
-                            required
-                            className={classnames(
-                              state.ma_chucvu_valid && 'is-valid',
-                              (state.ma_chucvu_valid === false) && 'is-invalid'
-                            )}
-                          />
-                          {(state.ma_chucvu_valid === false) && <div className="invalid-feedback">{state.ma_chucvu_error}</div>}
-                        </FormGroup>
-                        <FormGroup>
-                          <label htmlFor='#ten_chucvu'>Tên chức vụ</label>
-                          <FormInput
-                            id='#ten_chucvu'
-                            name='ten_chucvu'
-                            value={state.ten_chucvu}
-                            onChange={this.handleChangeInput}
-                            onBlur={this.handleValidation}
-                            placeholder='Tên chức vụ'
-                            required
-                            className={classnames(
-                              state.ten_chucvu_valid && 'is-valid',
-                              (state.ten_chucvu_valid === false) && 'is-invalid'
-                            )}
-                          />
-                          {(state.ten_chucvu_valid === false) && <div className="invalid-feedback">{state.ten_chucvu_error}</div>}
-                        </FormGroup>
-                        <div className='text-right'>
-                          <Button type='submit' theme='primary'>Tạo</Button>
-                          <button type='button' onClick={this.handleModal}
-                            className='btn btn-link text-decoration-none'>Đóng</button>
-                        </div>
-                      </Form>
-                    </ModalBody>
-                  </Modal>
-                </div>
-              </CardHeader>
-              <CardBody className="p-0 pb-3">
-                <table className="table mb-0">
-                  <thead className="bg-light">
-                    <tr>
-                      <th scope="col" width={'10%'} className="border-0">#</th>
-                      <th scope="col" width={'30%'} className="border-0">ID</th>
-                      <th scope="col" className="border-0">Chức vụ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      (danhsach_chucvu.length > 0) && danhsach_chucvu.map((item, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td id={item._id}>{item.ma_vaitro}</td>
-                          <td>{item.ten_vaitro}</td>
-                        </tr>
-                      ))
-                    }
-                    {(danhsach_chucvu.length <= 0) && <tr><td colSpan={3} className="text-center">Danh sách rỗng</td></tr>}
-                  </tbody>
-                </table>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </Container >
+      <React.Fragment>
+        {/* Notify actions */}
+        <Alert className="admin-alert" open={this.state.alert_visible} theme={state.alert_theme}>
+          {state.alert_notify}! Đóng trong {this.state.alert_timeDismiss - this.state.alert_coundown}s
+        </Alert>
+
+        <Container className='main-content-container px-4'>
+          {/* Page Header */}
+          <Row noGutters className='page-header py-4'>
+            <PageTitle sm='4' title='Danh sách vai trò' subtitle='Vai trò' className='text-sm-left' />
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <Card small className='mb-4'>
+                <CardHeader className='border-bottom d-flex justify-content-between'>
+                  <h6 className='m-0'>Danh sách vai trò</h6>
+                  <div>
+                    <Button theme='primary' onClick={() => this.handleModal('modal_new')}>Tạo chức vụ mới</Button>
+                  </div>
+                </CardHeader>
+                <CardBody className='p-0 pb-3'>
+                  <DanhSachVaiTro
+                    danhSachChucVu={this.state.danhsach_vaitro}
+                    getVaiTro={this.getVaiTro}
+                    deleteVaiTro={this.deleteVaiTro}
+                  />
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          <ModalThemVaiTro
+            modalNew={state.modal_new}
+            handleModal={this.handleModal}
+            handleChange={this.handleChange}
+            id_vaitro={state.id_vaitro}
+            ma_vaitro={state.ma_vaitro}
+            ten_vaitro={state.ten_vaitro}
+            ten_vaitro_error={state.ten_vaitro_error}
+            ma_vaitro_error={state.ma_vaitro_error}
+            submitVaiTroMoi={this.submitVaiTroMoi}
+          />
+          <ModalSuaVaiTro
+            modalEdit={state.modal_edit}
+            handleModal={this.handleModal}
+            handleChange={this.handleChange}
+            id_vaitro={state.id_vaitro}
+            ma_vaitro={state.ma_vaitro}
+            ten_vaitro={state.ten_vaitro}
+            ten_vaitro_error={state.ten_vaitro_error}
+            ma_vaitro_error={state.ma_vaitro_error}
+            submitChinhSuaVaiTro={this.submitChinhSuaVaiTro}
+          />
+          <ModalXoaVaiTro
+            modalDelete={state.modal_delete}
+            handleModal={this.handleModal}
+            submitXoaVaiTro={this.submitXoaVaiTro}
+            id_vaitro={state.id_vaitro}
+            ma_vaitro={state.ma_vaitro}
+          />
+        </Container >
+      </React.Fragment>
     )
   }
 }

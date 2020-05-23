@@ -3,7 +3,13 @@ export default function() {
     {
       title: "Vai trò",
       to: "/vai-tro",
-      htmlBefore: '<i class="material-icons">assignment_ind</i>',
+      htmlBefore: '<i class="material-icons">assignment</i>',
+      htmlAfter: ""
+    },
+    {
+      title: "Tài khoản",
+      to: "/tai-khoan",
+      htmlBefore: '<i class="material-icons">supervised_user_circle</i>',
       htmlAfter: ""
     },
     {

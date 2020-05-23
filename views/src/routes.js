@@ -13,6 +13,7 @@ import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
 import VaiTro from './views/VaiTro';
+import TaiKhoan from './views/TaiKhoan';
 
 export default [
   {
@@ -25,6 +26,11 @@ export default [
     path: "/vai-tro",
     layout: DefaultLayout,
     component: VaiTro
+  },
+  {
+    path: "/tai-khoan",
+    layout: DefaultLayout,
+    component: TaiKhoan
   },
   {
     path: "/blog-overview",

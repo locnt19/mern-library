@@ -7,16 +7,16 @@ import {
 } from 'shards-react';
 import axios from 'axios';
 import PageTitle from '../components/common/PageTitle';
-import DanhSachVaiTro from '../components/vai-tro/DanhSachVaiTro';
+import DanhSachTaiKhoan from '../components/tai-khoan/DanhSachTaiKhoan';
 import ModalThemVaiTro from '../components/vai-tro/ModalThemVaiTro';
-import ModalSuaVaiTro from '../components/vai-tro/ModalSuaVaiTro';
-import ModalXoaVaiTro from '../components/vai-tro/ModalXoaVaiTro';
-const initialVaiTro = {
-  id_vaitro: "",
-  ma_vaitro: "",
-  ten_vaitro: "",
-  ma_vaitro_error: "",
-  ten_vaitro_error: "",
+import ModalSuaTaiKhoan from '../components/tai-khoan/ModalSuaTaiKhoan';
+import ModalXoaTaiKhoan from '../components/tai-khoan/ModalXoaTaiKhoan';
+const initialTaiKhoan = {
+  id_taikhoan: "",
+  username: "",
+  mat_khau: "",
+  username_error: "",
+  mat_khau_error: "",
 }
 const initialAlert = {
   alert_coundown: 0,
@@ -24,10 +24,11 @@ const initialAlert = {
 }
 
 
-class VaiTro extends React.Component {
+class TaiKhoan extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      danhsach_taikhoan: [],
       danhsach_vaitro: [],
       modal_new: false,
       modal_edit: false,
@@ -35,7 +36,7 @@ class VaiTro extends React.Component {
       alert_visible: false,
       alert_theme: 'success',
       alert_notify: '',
-      ...initialVaiTro,
+      ...initialTaiKhoan,
       ...initialAlert,
     };
 
@@ -80,7 +81,7 @@ class VaiTro extends React.Component {
         modal_new: !this.state.modal_new
       });
       if (this.state.modal_new === false) {
-        this.setState({ ...initialVaiTro });
+        this.setState({ ...initialTaiKhoan });
       };
     }
     if (name === 'modal_edit') {
@@ -95,93 +96,93 @@ class VaiTro extends React.Component {
     }
   };
 
-  validate = () => {
-    const state = this.state;
-    let ma_vaitro_error = "";
-    let ten_vaitro_error = "";
+  // validate = () => {
+  //   const state = this.state;
+  //   let ma_vaitro_error = "";
+  //   let ten_vaitro_error = "";
 
-    if (state.ma_vaitro.length === 0 || state.ma_vaitro.includes(' ')) {
-      ma_vaitro_error = "Mã vai trò không được có ký tự trắng và để trống";
-    }
+  //   if (state.ma_vaitro.length === 0 || state.ma_vaitro.includes(' ')) {
+  //     ma_vaitro_error = "Mã vai trò không được có ký tự trắng và để trống";
+  //   }
 
-    if (state.ten_vaitro.trim().length === 0) {
-      ten_vaitro_error = "Tên vai trò không được để trống";
-    }
+  //   if (state.ten_vaitro.trim().length === 0) {
+  //     ten_vaitro_error = "Tên vai trò không được để trống";
+  //   }
 
-    // ?????????????????????
-    if (ma_vaitro_error || ten_vaitro_error) {
-      this.setState({ ma_vaitro_error, ten_vaitro_error });
-      return false;
-    }
+  //   // ?????????????????????
+  //   if (ma_vaitro_error || ten_vaitro_error) {
+  //     this.setState({ ma_vaitro_error, ten_vaitro_error });
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
-  getVaiTro = (vaitro, modalName) => {
+  getTaiKhoan = (taikhoan, modalName) => {
     this.handleModal(modalName);
     this.setState({
-      id_vaitro: vaitro._id,
-      ma_vaitro: vaitro.ma_vaitro,
-      ten_vaitro: vaitro.ten_vaitro
-    })
+      id_taikhoan: taikhoan._id,
+      username: taikhoan.username,
+      mat_khau: taikhoan.mat_khau
+    });
   };
 
 
-  submitVaiTroMoi = event => {
-    event.preventDefault();
-    const isValid = this.validate();
-    if (isValid) {
-      axios.post('http://localhost:5000/api/vai-tro/', {
-        ma_vaitro: this.state.ma_vaitro,
-        ten_vaitro: this.state.ten_vaitro
-      })
-        .then(() => {
-          this.loadDanhSachVaiTro();
-          this.setState({
-            modal_new: false,
-            alert_notify: "Thêm mới thành công",
-          });
-          this.showAlert();
-        })
-        .catch(error => {
-          this.setState({
-            alert_notify: "Thêm mới thất bại, xin vui lòng thử lại",
-            alert_theme: "danger"
-          })
-          this.showAlert();
-          console.log(error);
-        });
-    }
-  };
+  // submitVaiTroMoi = event => {
+  //   event.preventDefault();
+  //   const isValid = this.validate();
+  //   if (isValid) {
+  //     axios.post('http://localhost:5000/api/vai-tro/', {
+  //       ma_vaitro: this.state.ma_vaitro,
+  //       ten_vaitro: this.state.ten_vaitro
+  //     })
+  //       .then(() => {
+  //         this.loadDanhSachVaiTro();
+  //         this.setState({
+  //           modal_new: false,
+  //           alert_notify: "Thêm mới thành công",
+  //         });
+  //         this.showAlert();
+  //       })
+  //       .catch(error => {
+  //         this.setState({
+  //           alert_notify: "Thêm mới thất bại, xin vui lòng thử lại",
+  //           alert_theme: "danger"
+  //         })
+  //         this.showAlert();
+  //         console.log(error);
+  //       });
+  //   }
+  // };
 
-  submitChinhSuaVaiTro = event => {
-    event.preventDefault();
-    axios.put('http://localhost:5000/api/vai-tro/' + this.state.id_vaitro, {
-      ma_vaitro: this.state.ma_vaitro,
-      ten_vaitro: this.state.ten_vaitro
-    })
-      .then(() => {
-        this.loadDanhSachVaiTro();
-        this.setState({
-          modal_edit: false,
-          alert_notify: "Cập nhật thành công"
-        });
-        this.showAlert();
-      })
-      .catch(error => {
-        this.setState({
-          alert_notify: "Cập nhật thất bại, xin vui lòng thử lại",
-          alert_theme: "danger"
-        });
-        this.showAlert();
-        console.log(error);
-      })
-  }
+  // submitChinhSuaVaiTro = event => {
+  //   event.preventDefault();
+  //   axios.put('http://localhost:5000/api/vai-tro/' + this.state.id_vaitro, {
+  //     ma_vaitro: this.state.ma_vaitro,
+  //     ten_vaitro: this.state.ten_vaitro
+  //   })
+  //     .then(() => {
+  //       this.loadDanhSachVaiTro();
+  //       this.setState({
+  //         modal_edit: false,
+  //         alert_notify: "Cập nhật thành công"
+  //       });
+  //       this.showAlert();
+  //     })
+  //     .catch(error => {
+  //       this.setState({
+  //         alert_notify: "Cập nhật thất bại, xin vui lòng thử lại",
+  //         alert_theme: "danger"
+  //       });
+  //       this.showAlert();
+  //       console.log(error);
+  //     })
+  // }
 
-  submitXoaVaiTro = () => {
-    axios.delete('http://localhost:5000/api/vai-tro/' + this.state.id_vaitro)
+  submitXoaTaiKhoan = () => {
+    axios.delete('http://localhost:5000/api/tai-khoan/' + this.state.id_taikhoan)
       .then(() => {
-        this.loadDanhSachVaiTro();
+        this.loadDanhSachTaikhoan();
         this.setState({
           modal_delete: false,
           alert_notify: "Xoá thành công",
@@ -198,7 +199,16 @@ class VaiTro extends React.Component {
       })
   }
 
-  loadDanhSachVaiTro = () => {
+  loadDanhSachTaikhoan = () => {
+    axios.get('http://localhost:5000/api/tai-khoan').then(res => {
+      this.setState({
+        danhsach_taikhoan: res.data
+      })
+    }).catch(error => console.log(error));
+  };
+
+
+  getDanhSachVaiTro = () => {
     axios.get('http://localhost:5000/api/vai-tro').then(res => {
       this.setState({
         danhsach_vaitro: res.data
@@ -207,7 +217,8 @@ class VaiTro extends React.Component {
   };
 
   componentDidMount() {
-    this.loadDanhSachVaiTro();
+    this.loadDanhSachTaikhoan();
+    this.getDanhSachVaiTro();
   }
 
   render() {
@@ -222,21 +233,21 @@ class VaiTro extends React.Component {
         <Container className='main-content-container px-4'>
           {/* Page Header */}
           <Row noGutters className='page-header py-4'>
-            <PageTitle sm='4' title='Danh sách vai trò' subtitle='Vai trò' className='text-sm-left' />
+            <PageTitle sm='4' title='Danh sách tài khoản' subtitle='Tài khoản' className='text-sm-left' />
           </Row>
           <Row>
             <Col xs={12}>
               <Card small className='mb-4'>
                 <CardHeader className='border-bottom d-flex justify-content-between'>
-                  <h6 className='m-0'>Danh sách vai trò</h6>
+                  <h6 className='m-0'>Danh sách tài khoản</h6>
                   <div>
-                    <Button theme='primary' onClick={() => this.handleModal('modal_new')}>Tạo chức vụ mới</Button>
+                    <Button theme='primary' onClick={() => this.handleModal('modal_new')}>Tạo tài khoản mới</Button>
                   </div>
                 </CardHeader>
                 <CardBody className='p-0 pb-3'>
-                  <DanhSachVaiTro
-                    danhSachVaiTro={this.state.danhsach_vaitro}
-                    getVaiTro={this.getVaiTro}
+                  <DanhSachTaiKhoan
+                    danhSachTaiKhoan={this.state.danhsach_taikhoan}
+                    getTaiKhoan={this.getTaiKhoan}
                   />
                 </CardBody>
               </Card>
@@ -253,22 +264,23 @@ class VaiTro extends React.Component {
             ma_vaitro_error={state.ma_vaitro_error}
             submitVaiTroMoi={this.submitVaiTroMoi}
           />
-          <ModalSuaVaiTro
+          <ModalSuaTaiKhoan
             modalEdit={state.modal_edit}
             handleModal={this.handleModal}
             handleChange={this.handleChange}
-            ma_vaitro={state.ma_vaitro}
+            danhSachVaiTro={state.danhsach_vaitro}
+            username={state.username}
             ten_vaitro={state.ten_vaitro}
             ten_vaitro_error={state.ten_vaitro_error}
             ma_vaitro_error={state.ma_vaitro_error}
             submitChinhSuaVaiTro={this.submitChinhSuaVaiTro}
           />
-          <ModalXoaVaiTro
+          <ModalXoaTaiKhoan
             modalDelete={state.modal_delete}
             handleModal={this.handleModal}
-            submitXoaVaiTro={this.submitXoaVaiTro}
-            id_vaitro={state.id_vaitro}
-            ma_vaitro={state.ma_vaitro}
+            submitXoaTaiKhoan={this.submitXoaTaiKhoan}
+            id_taikhoan={state.id_taikhoan}
+            username={state.username}
           />
         </Container >
       </React.Fragment>
@@ -276,4 +288,4 @@ class VaiTro extends React.Component {
   }
 }
 
-export default VaiTro;
+export default TaiKhoan;
